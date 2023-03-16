@@ -18,5 +18,5 @@
 ```bash
 git clone https://github.com/oyps/local-disk.git
 docker build -t local-disk-image local-disk
-docker run --name local-disk -d local-disk-image
+docker run --name local-disk -p 3000:3000 -d local-disk-image
 ```
