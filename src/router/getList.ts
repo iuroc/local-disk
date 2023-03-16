@@ -19,7 +19,6 @@ router.get('/', async (request, response) => {
             resolve(rows as FileDataRow[])
         })
     })
-    console.log(result)
     sendResponse(response, {
         code: 200,
         msg: '获取成功',

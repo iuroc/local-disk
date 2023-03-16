@@ -62,7 +62,6 @@ router.get('/', function (request, response) { return __awaiter(void 0, void 0, 
                     })];
             case 2:
                 result = _a.sent();
-                console.log(result);
                 (0, tool_1.sendResponse)(response, {
                     code: 200,
                     msg: '获取成功',
