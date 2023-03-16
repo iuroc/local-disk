@@ -49,7 +49,7 @@ function initDatabase() {
             return __generator(this, function (_a) {
                 if (error)
                     console.log('数据库连接失败');
-                conn.run("CREATE TABLE IF NOT EXISTS \"filelist\" (\n                \"id\" INTEGER NOT NULL,\n                \"parent_id\" INT NOT NULL,\n                \"name\" TEXT NOT NULL,\n                \"is_dir\" INTEGER NOT NULL,\n                \"object_id\" TEXT NOT NULL,\n                \"upload_time\" TEXT NOT NULL,\n                PRIMARY KEY(\"id\" AUTOINCREMENT),\n                UNIQUE(\"parent_id\", \"name\", \"is_dir\")\n            )", function (error) {
+                conn.run("CREATE TABLE IF NOT EXISTS \"filelist\" (\n                \"id\" INTEGER NOT NULL,\n                \"parent_id\" INT NOT NULL,\n                \"name\" TEXT NOT NULL,\n                \"is_dir\" INTEGER NOT NULL,\n                \"object_id\" TEXT,\n                \"upload_time\" TEXT NOT NULL,\n                PRIMARY KEY(\"id\" AUTOINCREMENT),\n                UNIQUE(\"parent_id\", \"name\", \"is_dir\")\n            )", function (error) {
                     if (error)
                         console.log('数据表创建失败');
                     resolve(conn);
