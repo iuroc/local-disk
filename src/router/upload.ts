@@ -3,12 +3,15 @@ import axios from 'axios'
 import * as FormData from 'form-data'
 import { AxiosResponse } from 'axios'
 import { Database } from 'sqlite3'
+import { initDatabase } from '../database'
+import { sendResponse } from '../tool'
+
 const router = Router()
 
-router.post('/upload', async (request: Request, response: Response) => {
-    if (!request.file) return sendResponse(response, {
+router.post('/', async (request, response) => {
+    if (!request.file || !request.body) return sendResponse(response, {
         code: 0,
-        msg: '文件错误',
+        msg: '文件或参数错误',
         data: null
     })
     /** SQLite 数据库连接 */
@@ -36,7 +39,7 @@ router.post('/upload', async (request: Request, response: Response) => {
  */
 function fileExistsInFolder(conn: Database, request: Request) {
     /** 父文件夹 ID */
-    let parentId: number = request.body.parentId || 0
+    let parentId: string = request.body.parentId || ''
     const file = request.file as Express.Multer.File
     let filename = getFileName(file)
     let sql = `SELECT COUNT(*) as count FROM "filelist" WHERE "name" = "${filename}" AND "parent_id" = ${parentId}`
@@ -68,30 +71,7 @@ function insertFileRow(conn: Database, request: Request, result: AxiosResponse) 
     })
 }
 
-/**
- * 初始化数据库
- * @param conn 数据库连接
- */
-function initDatabase() {
-    return new Promise<Database>((resolve) => {
-        const conn = new Database('filelist.db', async (error) => {
-            if (error) console.log('数据库连接失败')
-            conn.run(`CREATE TABLE IF NOT EXISTS "filelist" (
-                "id" INTEGER NOT NULL,
-                "parent_id" INT NOT NULL,
-                "name" TEXT NOT NULL,
-                "is_dir" INTEGER NOT NULL,
-                "object_id" TEXT NOT NULL,
-                "upload_time" TEXT NOT NULL,
-                PRIMARY KEY("id" AUTOINCREMENT),
-                UNIQUE("parent_id", "name", "is_dir")
-            )`, (error) => {
-                if (error) console.log('插入记录失败')
-                resolve(conn)
-            })
-        })
-    })
-}
+
 
 /**
  * 获取文件名
@@ -130,21 +110,6 @@ function uploadFile(file: Express.Multer.File) {
  */
 function isEncoding(data: string, encoding: BufferEncoding) {
     return Buffer.from(data, encoding).toString(encoding) == data
-}
-
-/** API 响应数据 */
-type ApiResponse = {
-    /** 响应码 */
-    code: 200 | 0,
-    /** 响应说明 */
-    msg: string,
-    /** 响应数据 */
-    data: any
-}
-
-/** 发送响应 */
-function sendResponse(response: Response, data: ApiResponse) {
-    response.send(data)
 }
 
 

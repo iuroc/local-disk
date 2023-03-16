@@ -5,16 +5,37 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文件上传</title>
+    <title>APEE 云盘</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
-    <h1>文件上传</h1>
-    <div style="margin-bottom: 20px;">
-        <input type="file" class="file">
-        <button class="upload">上传</button>
+<body class="user-select-none">
+    <div class="py-3 shadow-sm border-bottom border-3">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <a class="fs-3 fw-bold me-auto" href="">APEE 云盘</a>
+                <button class="btn btn-primary me-3">上传文件</button>
+                <button class="btn btn-success">新建文件夹</button>
+            </div>
+        </div>
     </div>
-    <div class="result"></div>
+    <div class="container py-4">
+        <div class="file-list row">
+            <div class="col-sm-6 col-lg-4 col-xxl-3">
+                <div class="file-list-item hover-shadow card card-body flex-row align-items-center">
+                    <img class="icon" src="./img/folder-solid.svg" alt="folder" height="35px" width="35px">
+                    <div class="fs-5 ms-3 text-truncate">校花的贴身高手哈哈哈</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 col-xxl-3">
+                <div class="file-list-item hover-shadow card card-body flex-row align-items-center">
+                    <img class="icon" src="./img/file-regular.svg" alt="folder" height="35px" width="35px">
+                    <div class="fs-5 ms-3 text-truncate">校花的贴身高手哈哈哈</div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="./src/index.js"></script>
 </body>
 

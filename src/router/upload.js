@@ -39,29 +39,30 @@ exports.__esModule = true;
 var express_1 = require("express");
 var axios_1 = require("axios");
 var FormData = require("form-data");
-var sqlite3_1 = require("sqlite3");
+var database_1 = require("../database");
+var tool_1 = require("../tool");
 var router = (0, express_1.Router)();
-router.post('/upload', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+router.post('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var conn, isExists, result;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!request.file)
-                    return [2 /*return*/, sendResponse(response, {
+                if (!request.file || !request.body)
+                    return [2 /*return*/, (0, tool_1.sendResponse)(response, {
                             code: 0,
-                            msg: '文件错误',
+                            msg: '文件或参数错误',
                             data: null
                         })
                         /** SQLite 数据库连接 */
                     ];
-                return [4 /*yield*/, initDatabase()];
+                return [4 /*yield*/, (0, database_1.initDatabase)()];
             case 1:
                 conn = _a.sent();
                 return [4 /*yield*/, fileExistsInFolder(conn, request)];
             case 2:
                 isExists = _a.sent();
                 if (isExists)
-                    return [2 /*return*/, sendResponse(response, {
+                    return [2 /*return*/, (0, tool_1.sendResponse)(response, {
                             code: 0,
                             msg: '当前目录已经存在该文件',
                             data: null
@@ -73,7 +74,7 @@ router.post('/upload', function (request, response) { return __awaiter(void 0, v
             case 4:
                 _a.sent();
                 conn.close();
-                sendResponse(response, {
+                (0, tool_1.sendResponse)(response, {
                     code: 200,
                     msg: '上传成功',
                     data: result.data.data.result
@@ -89,7 +90,7 @@ router.post('/upload', function (request, response) { return __awaiter(void 0, v
  */
 function fileExistsInFolder(conn, request) {
     /** 父文件夹 ID */
-    var parentId = request.body.parentId || 0;
+    var parentId = request.body.parentId || '';
     var file = request.file;
     var filename = getFileName(file);
     var sql = "SELECT COUNT(*) as count FROM \"filelist\" WHERE \"name\" = \"".concat(filename, "\" AND \"parent_id\" = ").concat(parentId);
@@ -117,27 +118,6 @@ function insertFileRow(conn, request, result) {
         conn.run(sql, function (error) {
             resolve(error);
         });
-    });
-}
-/**
- * 初始化数据库
- * @param conn 数据库连接
- */
-function initDatabase() {
-    var _this = this;
-    return new Promise(function (resolve) {
-        var conn = new sqlite3_1.Database('filelist.db', function (error) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                if (error)
-                    console.log('数据库连接失败');
-                conn.run("CREATE TABLE IF NOT EXISTS \"filelist\" (\n                \"id\" INTEGER NOT NULL,\n                \"parent_id\" INT NOT NULL,\n                \"name\" TEXT NOT NULL,\n                \"is_dir\" INTEGER NOT NULL,\n                \"object_id\" TEXT NOT NULL,\n                \"upload_time\" TEXT NOT NULL,\n                PRIMARY KEY(\"id\" AUTOINCREMENT),\n                UNIQUE(\"parent_id\", \"name\", \"is_dir\")\n            )", function (error) {
-                    if (error)
-                        console.log('插入记录失败');
-                    resolve(conn);
-                });
-                return [2 /*return*/];
-            });
-        }); });
     });
 }
 /**
@@ -175,9 +155,5 @@ function uploadFile(file) {
  */
 function isEncoding(data, encoding) {
     return Buffer.from(data, encoding).toString(encoding) == data;
-}
-/** 发送响应 */
-function sendResponse(response, data) {
-    response.send(data);
 }
 exports["default"] = router;
