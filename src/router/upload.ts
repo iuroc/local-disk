@@ -10,11 +10,18 @@ router.post('/upload', async (request: Request, response: Response) => {
     /** SQLite 数据库连接 */
     const conn = await initDatabase()
     let isExists = await fileExistsInFolder(conn, request)
-    if (isExists) return response.send('当前目录已经存在该文件')
+    if (isExists) return response.send({
+        code: 0,
+        msg: '当前目录已经存在该文件'
+    })
     const result = await uploadFile(request.file)
     await insertFileRow(conn, request, result)
     conn.close()
-    response.send(result.data)
+    response.send({
+        code: 200,
+        msg: '上传成功',
+        data: result.data.data.result
+    })
 })
 
 /**

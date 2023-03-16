@@ -57,7 +57,10 @@ router.post('/upload', function (request, response) { return __awaiter(void 0, v
             case 2:
                 isExists = _a.sent();
                 if (isExists)
-                    return [2 /*return*/, response.send('当前目录已经存在该文件')];
+                    return [2 /*return*/, response.send({
+                            code: 0,
+                            msg: '当前目录已经存在该文件'
+                        })];
                 return [4 /*yield*/, uploadFile(request.file)];
             case 3:
                 result = _a.sent();
@@ -65,7 +68,11 @@ router.post('/upload', function (request, response) { return __awaiter(void 0, v
             case 4:
                 _a.sent();
                 conn.close();
-                response.send(result.data);
+                response.send({
+                    code: 200,
+                    msg: '上传成功',
+                    data: result.data.data.result
+                });
                 return [2 /*return*/];
         }
     });
