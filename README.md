@@ -18,6 +18,7 @@
 ```bash
 docker stop local-disk
 docker rm local-disk
+docker rmi local-disk-image
 cd /container
 rm -rf local-disk
 git clone https://github.com/oyps/local-disk.git # 克隆仓库
