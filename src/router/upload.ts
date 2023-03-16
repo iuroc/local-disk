@@ -6,18 +6,23 @@ import { Database } from 'sqlite3'
 const router = Router()
 
 router.post('/upload', async (request: Request, response: Response) => {
-    if (!request.file) return response.send('错误')
+    if (!request.file) return sendResponse(response, {
+        code: 0,
+        msg: '文件错误',
+        data: null
+    })
     /** SQLite 数据库连接 */
     const conn = await initDatabase()
     let isExists = await fileExistsInFolder(conn, request)
-    if (isExists) return response.send({
+    if (isExists) return sendResponse(response, {
         code: 0,
-        msg: '当前目录已经存在该文件'
+        msg: '当前目录已经存在该文件',
+        data: null
     })
     const result = await uploadFile(request.file)
     await insertFileRow(conn, request, result)
     conn.close()
-    response.send({
+    sendResponse(response, {
         code: 200,
         msg: '上传成功',
         data: result.data.data.result
@@ -49,7 +54,7 @@ function fileExistsInFolder(conn: Database, request: Request) {
  * @param parentId 父文件夹 ID
  * @returns 
  */
-async function insertFileRow(conn: Database, request: Request, result: AxiosResponse) {
+function insertFileRow(conn: Database, request: Request, result: AxiosResponse) {
     /** 父文件夹 ID */
     let parentId: number = request.body.parentId || 0
     return new Promise<Error | null>((resolve) => {
@@ -106,7 +111,7 @@ function getFileName(file: Express.Multer.File) {
  * @param file 文件对象
  * @returns 超星响应内容
  */
-async function uploadFile(file: Express.Multer.File) {
+function uploadFile(file: Express.Multer.File) {
     let api = 'https://office.chaoxing.com/data/mobile/forms/gather/fore/file/upload'
     const formData = new FormData()
     // 很关键的部分，必须定义 options，否则会变成普通的 Buffer
@@ -115,8 +120,7 @@ async function uploadFile(file: Express.Multer.File) {
         contentType: file.mimetype,
         knownLength: file.size
     })
-    const result = await axios.post(api, formData)
-    return result
+    return axios.post(api, formData)
 }
 
 /**
@@ -127,5 +131,21 @@ async function uploadFile(file: Express.Multer.File) {
 function isEncoding(data: string, encoding: BufferEncoding) {
     return Buffer.from(data, encoding).toString(encoding) == data
 }
+
+/** API 响应数据 */
+type ApiResponse = {
+    /** 响应码 */
+    code: 200 | 0,
+    /** 响应说明 */
+    msg: string,
+    /** 响应数据 */
+    data: any
+}
+
+/** 发送响应 */
+function sendResponse(response: Response, data: ApiResponse) {
+    response.send(data)
+}
+
 
 export default router

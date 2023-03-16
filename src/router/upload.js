@@ -47,7 +47,11 @@ router.post('/upload', function (request, response) { return __awaiter(void 0, v
         switch (_a.label) {
             case 0:
                 if (!request.file)
-                    return [2 /*return*/, response.send('错误')
+                    return [2 /*return*/, sendResponse(response, {
+                            code: 0,
+                            msg: '文件错误',
+                            data: null
+                        })
                         /** SQLite 数据库连接 */
                     ];
                 return [4 /*yield*/, initDatabase()];
@@ -57,9 +61,10 @@ router.post('/upload', function (request, response) { return __awaiter(void 0, v
             case 2:
                 isExists = _a.sent();
                 if (isExists)
-                    return [2 /*return*/, response.send({
+                    return [2 /*return*/, sendResponse(response, {
                             code: 0,
-                            msg: '当前目录已经存在该文件'
+                            msg: '当前目录已经存在该文件',
+                            data: null
                         })];
                 return [4 /*yield*/, uploadFile(request.file)];
             case 3:
@@ -68,7 +73,7 @@ router.post('/upload', function (request, response) { return __awaiter(void 0, v
             case 4:
                 _a.sent();
                 conn.close();
-                response.send({
+                sendResponse(response, {
                     code: 200,
                     msg: '上传成功',
                     data: result.data.data.result
@@ -102,19 +107,15 @@ function fileExistsInFolder(conn, request) {
  * @returns
  */
 function insertFileRow(conn, request, result) {
-    return __awaiter(this, void 0, void 0, function () {
-        var parentId;
-        return __generator(this, function (_a) {
-            parentId = request.body.parentId || 0;
-            return [2 /*return*/, new Promise(function (resolve) {
-                    var file = request.file;
-                    var filename = getFileName(file);
-                    var objectId = result.data.data.result.objectId;
-                    var sql = "INSERT INTO \"filelist\" (\"parent_id\", \"name\", \"is_dir\", \"object_id\", \"upload_time\") VALUES (".concat(parentId, ", \"").concat(filename, "\", 0, \"").concat(objectId, "\", \"").concat(new Date().toLocaleString(), "\")");
-                    conn.run(sql, function (error) {
-                        resolve(error);
-                    });
-                })];
+    /** 父文件夹 ID */
+    var parentId = request.body.parentId || 0;
+    return new Promise(function (resolve) {
+        var file = request.file;
+        var filename = getFileName(file);
+        var objectId = result.data.data.result.objectId;
+        var sql = "INSERT INTO \"filelist\" (\"parent_id\", \"name\", \"is_dir\", \"object_id\", \"upload_time\") VALUES (".concat(parentId, ", \"").concat(filename, "\", 0, \"").concat(objectId, "\", \"").concat(new Date().toLocaleString(), "\")");
+        conn.run(sql, function (error) {
+            resolve(error);
         });
     });
 }
@@ -157,26 +158,15 @@ function getFileName(file) {
  * @returns 超星响应内容
  */
 function uploadFile(file) {
-    return __awaiter(this, void 0, void 0, function () {
-        var api, formData, result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    api = 'https://office.chaoxing.com/data/mobile/forms/gather/fore/file/upload';
-                    formData = new FormData();
-                    // 很关键的部分，必须定义 options，否则会变成普通的 Buffer
-                    formData.append('file', file.buffer, {
-                        filename: getFileName(file),
-                        contentType: file.mimetype,
-                        knownLength: file.size
-                    });
-                    return [4 /*yield*/, axios_1["default"].post(api, formData)];
-                case 1:
-                    result = _a.sent();
-                    return [2 /*return*/, result];
-            }
-        });
+    var api = 'https://office.chaoxing.com/data/mobile/forms/gather/fore/file/upload';
+    var formData = new FormData();
+    // 很关键的部分，必须定义 options，否则会变成普通的 Buffer
+    formData.append('file', file.buffer, {
+        filename: getFileName(file),
+        contentType: file.mimetype,
+        knownLength: file.size
     });
+    return axios_1["default"].post(api, formData);
 }
 /**
  * 判断字符串是否是某种编码
@@ -185,5 +175,9 @@ function uploadFile(file) {
  */
 function isEncoding(data, encoding) {
     return Buffer.from(data, encoding).toString(encoding) == data;
+}
+/** 发送响应 */
+function sendResponse(response, data) {
+    response.send(data);
 }
 exports["default"] = router;
