@@ -374,7 +374,7 @@ function loadFileList(parentId, page, pageSize) {
                 var list = data.data;
                 list.forEach(function (item) {
                     var imgPath = item.is_dir == 1 ? './img/folder-solid.svg' : './img/file-regular.svg';
-                    html_1 += "<div class=\"col-sm-6 col-lg-4 col-xxl-3\">\n                                <div class=\"file-list-item hover-shadow card card-body flex-row align-items-center\"\n                                title=\"".concat(item.name, "\">\n                                    <img class=\"icon\" src=\"").concat(imgPath, "\" alt=\"").concat(['file', 'folder'][item.is_dir], "\" height=\"35px\" width=\"35px\">\n                                    <div class=\"fs-5 ms-3 text-truncate\">").concat(item.name, "</div>\n                                </div>\n                            </div>");
+                    html_1 += "<div class=\"col-sm-6 col-lg-4 col-xxl-3 mb-3\">\n                                <div class=\"file-list-item hover-shadow card card-body flex-row align-items-center\"\n                                title=\"".concat(item.name, "\">\n                                    <img class=\"icon\" src=\"").concat(imgPath, "\" alt=\"").concat(['file', 'folder'][item.is_dir], "\" height=\"35px\" width=\"35px\">\n                                    <div class=\"fs-5 ms-3 text-truncate\">").concat(item.name, "</div>\n                                </div>\n                            </div>");
                 });
                 listEle.innerHTML += html_1;
                 resolve(null);
