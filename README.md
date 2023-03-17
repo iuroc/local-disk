@@ -23,6 +23,6 @@ cd /container
 rm -rf local-disk
 git clone https://github.com/oyps/local-disk.git # 克隆仓库
 docker build -t local-disk-image local-disk # 构建镜像
-docker run --name local-disk -p 3000:3000 -d local-disk-image # 创建容器
+docker run --name local-disk -v local-disk:/usr/src -p 3000:3000 -d local-disk-image # 创建容器
 rm -rf local-disk # 删除原文件
 ```
