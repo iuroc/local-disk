@@ -41,8 +41,10 @@ var axios_1 = require("axios");
 var FormData = require("form-data");
 var database_1 = require("../database");
 var tool_1 = require("../tool");
+var multer = require("multer");
+var upload = multer();
 var router = (0, express_1.Router)();
-router.post('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+router.post('/', upload.single('file'), function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var conn, isExists, result;
     return __generator(this, function (_a) {
         switch (_a.label) {

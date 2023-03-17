@@ -5,10 +5,12 @@ import { AxiosResponse } from 'axios'
 import { Database } from 'sqlite3'
 import { initDatabase } from '../database'
 import { sendResponse } from '../tool'
+import * as multer from 'multer'
 
+const upload = multer()
 const router = Router()
 
-router.post('/', async (request, response) => {
+router.post('/', upload.single('file'), async (request, response) => {
     if (!request.file || !request.body) return sendResponse(response, {
         code: 0,
         msg: '文件或参数错误',
