@@ -15,13 +15,15 @@
 
 ## Docker 部署
 
+在服务器任意路径运行下面的命令：
+
 ```bash
-docker stop local-disk
-docker rm local-disk
-docker rmi local-disk-image
-cd /container
-rm -rf local-disk
+docker stop local-disk # 停止原容器
+docker rm local-disk # 删除原容器
+docker rmi local-disk-image # 删除原镜像
+rm -rf local-disk # 删除原文件夹
 git clone https://github.com/oyps/local-disk.git # 克隆仓库
 docker build -t local-disk-image local-disk # 构建镜像
 docker run --name local-disk -p 3000:3000 -d local-disk-image # 创建容器
+rm -rf local-disk # 删除残留文件
 ```
