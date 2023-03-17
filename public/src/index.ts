@@ -32,7 +32,7 @@ function loadFileList(parentId: number = 0, page: number = 0, pageSize: number =
                 const list: FileDataRow[] = data.data
                 list.forEach(item => {
                     let imgPath = item.is_dir == 1 ? './img/folder-solid.svg' : './img/file-regular.svg'
-                    html += `<div class="col-sm-6 col-lg-4 col-xxl-3">
+                    html += `<div class="col-sm-6 col-lg-4 col-xxl-3 mb-3">
                                 <div class="file-list-item hover-shadow card card-body flex-row align-items-center"
                                 title="${item.name}">
                                     <img class="icon" src="${imgPath}" alt="${['file', 'folder'][item.is_dir]}" height="35px" width="35px">
