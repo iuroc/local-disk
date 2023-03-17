@@ -45,7 +45,7 @@ var multer = require("multer");
 var upload = multer();
 var router = (0, express_1.Router)();
 router.post('/', upload.single('file'), function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var conn, isExists, result;
+    var conn, isExists, result, objectId;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -72,6 +72,13 @@ router.post('/', upload.single('file'), function (request, response) { return __
                 return [4 /*yield*/, uploadFile(request.file)];
             case 3:
                 result = _a.sent();
+                objectId = getObjectId(result);
+                if (!objectId)
+                    return [2 /*return*/, (0, tool_1.sendResponse)(response, {
+                            code: 0,
+                            msg: '文件格式错误',
+                            data: null
+                        })];
                 return [4 /*yield*/, insertFileRow(conn, request, result)];
             case 4:
                 _a.sent();
@@ -115,12 +122,21 @@ function insertFileRow(conn, request, result) {
     return new Promise(function (resolve) {
         var file = request.file;
         var filename = getFileName(file);
-        var objectId = result.data.data.result.objectId;
+        var objectId = getObjectId(result);
         var sql = "INSERT INTO \"filelist\" (\"parent_id\", \"name\", \"is_dir\", \"object_id\", \"upload_time\") VALUES (".concat(parentId, ", \"").concat(filename, "\", 0, \"").concat(objectId, "\", \"").concat(new Date().toLocaleString(), "\")");
         conn.run(sql, function (error) {
             resolve(error);
         });
     });
+}
+function getObjectId(result) {
+    if (!result.data.data)
+        return '';
+    if (!result.data.data.result)
+        return '';
+    if (!result.data.data.result.objectId)
+        return '';
+    return result.data.data.result.objectId;
 }
 /**
  * 获取文件名
@@ -148,7 +164,15 @@ function uploadFile(file) {
         contentType: file.mimetype,
         knownLength: file.size
     });
-    return axios_1["default"].post(api, formData);
+    var promise = axios_1["default"].post(api, formData, {
+        onUploadProgress: function (event) {
+            console.log(event);
+        }
+    });
+    promise["catch"](function (reason) {
+        console.log(reason);
+    });
+    return promise;
 }
 /**
  * 判断字符串是否是某种编码

@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
 import axios from 'axios'
 import * as FormData from 'form-data'
-import { AxiosResponse } from 'axios'
+import { AxiosResponse, AxiosProgressEvent } from 'axios'
 import { Database } from 'sqlite3'
 import { initDatabase } from '../database'
 import { sendResponse } from '../tool'
@@ -25,6 +25,12 @@ router.post('/', upload.single('file'), async (request, response) => {
         data: null
     })
     const result = await uploadFile(request.file)
+    let objectId = getObjectId(result)
+    if (!objectId) return sendResponse(response, {
+        code: 0,
+        msg: '文件格式错误',
+        data: null
+    })
     await insertFileRow(conn, request, result)
     conn.close()
     sendResponse(response, {
@@ -65,7 +71,7 @@ function insertFileRow(conn: Database, request: Request, result: AxiosResponse) 
     return new Promise<Error | null>((resolve) => {
         const file = request.file as Express.Multer.File
         let filename = getFileName(file)
-        let objectId = result.data.data.result.objectId
+        let objectId = getObjectId(result)
         let sql = `INSERT INTO "filelist" ("parent_id", "name", "is_dir", "object_id", "upload_time") VALUES (${parentId}, "${filename}", 0, "${objectId}", "${new Date().toLocaleString()}")`
         conn.run(sql, (error) => {
             resolve(error)
@@ -73,7 +79,12 @@ function insertFileRow(conn: Database, request: Request, result: AxiosResponse) 
     })
 }
 
-
+function getObjectId(result: AxiosResponse) {
+    if (!result.data.data) return ''
+    if (!result.data.data.result) return ''
+    if (!result.data.data.result.objectId) return ''
+    return result.data.data.result.objectId as string
+}
 
 /**
  * 获取文件名
@@ -102,7 +113,15 @@ function uploadFile(file: Express.Multer.File) {
         contentType: file.mimetype,
         knownLength: file.size
     })
-    return axios.post(api, formData)
+    const promise = axios.post(api, formData, {
+        onUploadProgress: event => {
+            console.log(event)
+        }
+    })
+    promise.catch((reason) => {
+        console.log(reason)
+    })
+    return promise
 }
 
 /**
