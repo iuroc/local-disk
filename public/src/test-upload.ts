@@ -4,12 +4,16 @@ const resultEle = document.querySelector('.result') as HTMLDivElement
 uploadEle.addEventListener('click', () => {
     const files = fileEle.files
     if (!files || files.length == 0) return
+    resultEle.innerHTML = ''
     const file = files[0]
     const formData = new FormData()
     formData.append('file', file)
     formData.append('parentId', '0')
     resultEle.innerHTML = ''
     const xhr = new XMLHttpRequest()
+    xhr.upload.addEventListener('progress', (event) => {
+        resultEle.innerHTML = Math.floor(event.loaded / event.total * 100) + '%'
+    })
     xhr.open('post', '/upload', true)
     xhr.send(formData)
     xhr.onreadystatechange = () => {

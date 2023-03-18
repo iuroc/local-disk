@@ -10,7 +10,7 @@ import * as multer from 'multer'
 const upload = multer()
 const router = Router()
 
-router.post('/', upload.single('file'), async (request, response) => {
+router.post('/upload', upload.single('file'), async (request, response) => {
     if (!request.file || !request.body) return sendResponse(response, {
         code: 0,
         msg: '文件或参数错误',
@@ -113,11 +113,7 @@ function uploadFile(file: Express.Multer.File) {
         contentType: file.mimetype,
         knownLength: file.size
     })
-    const promise = axios.post(api, formData, {
-        onUploadProgress: event => {
-            console.log(event)
-        }
-    })
+    const promise = axios.post(api, formData)
     promise.catch((reason) => {
         console.log(reason)
     })

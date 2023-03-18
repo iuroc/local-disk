@@ -6,12 +6,16 @@ uploadEle.addEventListener('click', function () {
     var files = fileEle.files;
     if (!files || files.length == 0)
         return;
+    resultEle.innerHTML = '';
     var file = files[0];
     var formData = new FormData();
     formData.append('file', file);
     formData.append('parentId', '0');
     resultEle.innerHTML = '';
     var xhr = new XMLHttpRequest();
+    xhr.upload.addEventListener('progress', function (event) {
+        resultEle.innerHTML = Math.floor(event.loaded / event.total * 100) + '%';
+    });
     xhr.open('post', '/upload', true);
     xhr.send(formData);
     xhr.onreadystatechange = function () {

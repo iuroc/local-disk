@@ -44,7 +44,7 @@ var tool_1 = require("../tool");
 var multer = require("multer");
 var upload = multer();
 var router = (0, express_1.Router)();
-router.post('/', upload.single('file'), function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+router.post('/upload', upload.single('file'), function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var conn, isExists, result, objectId;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -164,11 +164,7 @@ function uploadFile(file) {
         contentType: file.mimetype,
         knownLength: file.size
     });
-    var promise = axios_1["default"].post(api, formData, {
-        onUploadProgress: function (event) {
-            console.log(event);
-        }
-    });
+    var promise = axios_1["default"].post(api, formData);
     promise["catch"](function (reason) {
         console.log(reason);
     });
