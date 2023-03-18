@@ -1,9 +1,8 @@
 FROM node
 ADD . /usr/src
 WORKDIR /usr/src
-RUN npm config set registry https://registry.npm.taobao.org
-RUN npm i typescript -g
-RUN npm i browserify -g
-RUN npm i
+RUN yarn add typescript -g
+RUN yarn add browserify -g
+RUN yarn i
 EXPOSE 3000
 CMD ["npm", "start"]
