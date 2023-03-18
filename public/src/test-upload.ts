@@ -20,7 +20,7 @@ uploadEle.addEventListener('click', () => {
         if (xhr.readyState == 4 && xhr.status == 200) {
             const result = JSON.parse(xhr.responseText)
             if (result.code == 0) return
-            let objectId = result.data.objectId
+            let objectId = result.data.result.objectId
             resultEle.innerHTML = `<a target="_blank" href="http://sharewh1.xuexi365.com/share/download/${objectId}">文件上传成功，点击下载</a>`
         }
     }
