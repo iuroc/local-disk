@@ -5,7 +5,7 @@ import { ParsedQs } from 'qs'
 
 const router = Router()
 
-router.get('/', async (request, response) => {
+router.get('/getList', async (request, response) => {
     const conn = await initDatabase()
     if (!request.query) return sendResponse(response, {
         code: 0,

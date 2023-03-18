@@ -40,7 +40,7 @@ var express_1 = require("express");
 var database_1 = require("../database");
 var tool_1 = require("../tool");
 var router = (0, express_1.Router)();
-router.get('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+router.get('/getList', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var conn, parentId, sql, result;
     return __generator(this, function (_a) {
         switch (_a.label) {
