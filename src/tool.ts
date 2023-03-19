@@ -1,4 +1,5 @@
 import { ParsedQs } from 'qs'
+import { Response } from 'express'
 /**
  * 转换请求参数值
  * @param value 待处理的值
@@ -32,7 +33,9 @@ export function parseValue<T extends keyof ValueType>(
         if (typeof value == 'string')
             return setReturn([value])
         if (Array.isArray(value)) {
-            const result = value.map((item: string | ParsedQs) => item.toString())
+            const result = value.map(
+                (item: string | ParsedQs) => item.toString()
+            )
             return setReturn(result)
         }
     }
@@ -90,7 +93,7 @@ interface ValueType {
 }
 
 /** 响应代码 */
-type resCode = 200 | 0
+type resCode = 200 | 400
 
 /** API 响应数据 */
 export type ApiResponse = {
@@ -100,16 +103,38 @@ export type ApiResponse = {
 }
 
 /**
- * 生成响应数据结构
+ * 发送响应
  * @param data 响应数据主体
  * @param msg 提示文本
  * @param code 响应代码
  * @returns 生成结果
  */
-export function setResponse(data: any = null, msg: string = '', code: resCode = 200): ApiResponse {
-    return {
-        code: code,
-        msg: msg,
-        data: data
-    }
+export function sendRes(
+    res: Response,
+    data: any = null,
+    msg: string = '',
+    code: resCode = 200
+) {
+    return res.status(code).json({ code, msg, data })
+}
+
+/**
+ * 发送错误响应
+ * @param res 响应对象
+ * @param msg 提示文本
+ * @returns 
+ */
+export function sendErr(res: Response, msg?: string) {
+    return sendRes(res, null, msg, 400)
+}
+
+/**
+ * 发送成功响应
+ * @param res 响应对象
+ * @param data 响应数据主体
+ * @param msg 提示文本
+ * @returns 
+ */
+export function sendSuc(res: Response, data?: any, msg?: string) {
+    return sendRes(res, data, msg, 400)
 }
