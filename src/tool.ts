@@ -88,3 +88,28 @@ interface ValueType {
     /** 数字数组 */
     numArray: number[],
 }
+
+/** 响应代码 */
+type resCode = 200 | 0
+
+/** API 响应数据 */
+export type ApiResponse = {
+    code: resCode,
+    msg: string,
+    data: any
+}
+
+/**
+ * 生成响应数据结构
+ * @param data 响应数据主体
+ * @param msg 提示文本
+ * @param code 响应代码
+ * @returns 生成结果
+ */
+export function setResponse(data: any = null, msg: string = '', code: resCode = 200): ApiResponse {
+    return {
+        code: code,
+        msg: msg,
+        data: data
+    }
+}
