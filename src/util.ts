@@ -137,5 +137,5 @@ export function sendErr(res: Response, msg?: string) {
  * @returns 
  */
 export function sendSuc(res: Response, data?: any, msg?: string) {
-    return sendRes(res, data, msg, 400)
+    return sendRes(res, data, msg, 200)
 }
