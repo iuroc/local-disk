@@ -3,9 +3,12 @@ module.exports = grunt => {
         watch: {
             scripts: {
                 files: ['js/public/src/index.js'],
-                tasks: ['exec:yarn run build'],
+                tasks: ['exec'],
                 options: { spawn: false }
             }
+        },
+        exec: {
+            build: 'yarn run build'
         }
     })
     grunt.loadNpmTasks('grunt-contrib-watch')

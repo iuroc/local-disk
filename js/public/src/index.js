@@ -39,11 +39,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var querystring_1 = require("querystring");
 var util_1 = require("../../src/util");
 var ponconjs_1 = require("ponconjs");
+var config_1 = require("./config");
 document.body.ondragstart = function () { return false; };
 var poncon = new ponconjs_1.default();
 /** 页面加载就绪记录 */
-var LOAD = {};
-poncon.setPageList(['home', 'upload', 'about', 'list']);
+// const LOAD: Record<string, boolean> = {}
+/** 页面数据存储 */
+var DATA = {};
+poncon.setPageList(['home', 'upload', 'about', 'list', 'file']);
 poncon.setPage('home', function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -71,7 +74,20 @@ poncon.setPage('list', function (_dom, args) { return __awaiter(void 0, void 0, 
         }
     });
 }); });
+poncon.setPage('upload', function () {
+    document.title = '上传文件 - ' + config_1.CONFIG.siteName;
+});
 poncon.start();
+document.body.oncontextmenu = function (event) { return event.preventDefault(); };
+/** 右键菜单面板 */
+var menuEle = document.querySelector('.file-list-menu');
+document.documentElement.onclick = function (event) {
+    var targetEle = event.target;
+    if (!targetEle.classList.contains('file-list-menu')) {
+        if (menuEle)
+            menuEle.style.display = 'none';
+    }
+};
 /**
  * 加载文件列表
  * @param parentId 文件夹 ID
@@ -85,8 +101,6 @@ function loadFileList(parentId, page, pageSize) {
     if (pageSize === void 0) { pageSize = 24; }
     return new Promise(function (resolve) {
         var listEle = document.querySelector('.file-list');
-        if (page == 0)
-            listEle.innerHTML = '';
         var xhr = new XMLHttpRequest();
         xhr.open('GET', './getList?' + (0, querystring_1.stringify)({
             parentId: parentId,
@@ -101,13 +115,63 @@ function loadFileList(parentId, page, pageSize) {
                     return alert(data.msg);
                 var html_1 = '';
                 var list = data.data;
+                list.sort(function (a, b) {
+                    if (a.id === parentId) {
+                        return -1;
+                    }
+                    else if (b.id === parentId) {
+                        return 1;
+                    }
+                    else if (a.is_dir > b.is_dir) {
+                        return -1;
+                    }
+                    else if (a.is_dir < b.is_dir) {
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+                });
+                var folderName = list[0].name;
+                document.title = "".concat(parentId == 0 ? '' : "".concat(folderName, " - ")).concat(config_1.CONFIG.siteName);
                 list.forEach(function (item) {
                     html_1 += getHtml(item, parentId);
                 });
-                listEle.innerHTML += html_1;
+                if (page == 0)
+                    listEle.innerHTML = html_1;
+                else
+                    listEle.innerHTML += html_1;
+                addEvent(listEle);
                 resolve(null);
             }
         };
+    });
+}
+/** 文件列表右键事件 */
+function contextmenuEvent(event) {
+    event.preventDefault();
+    if (!menuEle)
+        return false;
+    var left = event.clientX;
+    var top = event.clientY;
+    menuEle.style.display = 'block';
+    var maxLeft = window.innerWidth - menuEle.offsetWidth;
+    var maxTop = window.innerHeight - menuEle.offsetHeight;
+    if (left > maxLeft)
+        left = maxLeft;
+    if (top > maxTop)
+        top = maxTop;
+    menuEle.style.left = left + 'px';
+    menuEle.style.top = top + 'px';
+}
+/**
+ * 为文件列表的列表项增加事件
+ * @param listEle 列表元素对象
+ */
+function addEvent(listEle) {
+    var eles = listEle.querySelectorAll('.file-list-item:not(.back)');
+    eles.forEach(function (ele) {
+        ele.addEventListener('contextmenu', contextmenuEvent);
     });
 }
 /**
@@ -117,8 +181,11 @@ function loadFileList(parentId, page, pageSize) {
  * @returns 列表项 HTML
  */
 function getHtml(item, parentId) {
-    var imgPath = item.is_dir == 1 ? './img/folder-solid.svg' : './img/file-regular.svg';
-    var name = item.id == parentId ? '返回上一级' : item.name;
-    var id = item.id == parentId ? item.parent_id : item.id;
-    return "<div class=\"col-sm-6 col-lg-4 col-xxl-3 mb-3\">\n    <a class=\"file-list-item hover-shadow card card-body flex-row align-items-center\"\n    title=\"".concat(name, "\" ").concat(item.is_dir ? "href=\"#/list/".concat(id, "\"") : '', ">\n        <img class=\"icon\" src=\"").concat(imgPath, "\" alt=\"").concat(['file', 'folder'][item.is_dir], "\" height=\"35px\" width=\"35px\">\n        <div class=\"fs-5 ms-3 text-truncate\">").concat(name, "</div>\n    </a>\n</div>");
+    /** 当前列表项是否为返回上一级 */
+    var ifBack = item.id == parentId;
+    var imgPath = ifBack ? './img/chevron-left-solid.svg' :
+        item.is_dir == 1 ? './img/folder-solid.svg' : './img/file-regular.svg';
+    var name = ifBack ? '返回上一级' : item.name;
+    var id = ifBack ? item.parent_id : item.id;
+    return "<div class=\"col-sm-6 col-lg-4 col-xxl-3 mb-3\">\n    <a class=\"file-list-item hover-shadow card card-body flex-row align-items-center ".concat(ifBack ? 'back' : '', "\"\n    title=\"").concat(name, "\" href=\"").concat(item.is_dir ? "#/list/".concat(id) : "#/file/".concat(id), "\">\n        <img class=\"icon\" src=\"").concat(imgPath, "\" alt=\"").concat(['file', 'folder'][item.is_dir], "\" height=\"35px\" width=\"35px\">\n        <div class=\"fs-5 ms-3 text-truncate\">").concat(name, "</div>\n    </a>\n</div>");
 }

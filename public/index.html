@@ -15,7 +15,7 @@
         <div class="container">
             <div class="d-flex align-items-center">
                 <a class="fs-3 fw-bold me-auto" href="#">APEE 云盘</a>
-                <button class="btn btn-primary me-3">上传文件</button>
+                <a class="btn btn-primary me-3" href="#/upload">上传文件</a>
                 <button class="btn btn-success">新建文件夹</button>
             </div>
         </div>
@@ -27,6 +27,17 @@
         <div class="poncon-upload poncon-page" style="display: none;">
 
         </div>
+        <div class="poncon-file poncon-page" style="display: none;">
+            这是个文件
+        </div>
+    </div>
+    <div class="file-list-menu shadow border py-2">
+        <div class="menu-item rename py-2 px-5">重命名</div>
+        <div class="menu-item remove py-2 px-5">移动</div>
+        <div class="menu-item copy py-2 px-5">复制</div>
+        <div class="menu-item info py-2 px-5">属性</div>
+        <div class="menu-item info py-2 px-5">分享</div>
+        <div class="menu-item delete py-2 px-5 text-danger">删除</div>
     </div>
     <script src="./dist/bundle.js"></script>
 </body>

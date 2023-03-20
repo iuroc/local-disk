@@ -15,3 +15,32 @@ a:hover {
 .hover-shadow:hover {
     box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
 }
+
+
+/* 右键菜单面板 */
+
+.file-list-menu {
+    border-radius: 10px;
+    position: fixed;
+    background-color: white;
+    font-size: 20px;
+    display: none;
+}
+
+.file-list-menu .menu-item {
+    cursor: pointer;
+    transition: background-color .3s;
+    white-space: nowrap;
+}
+
+.file-list-menu .menu-item:hover {
+    background-color: #eeeeee;
+}
+
+.file-list-menu .menu-item:active {
+    background-color: #dddddd;
+}
+
+html {
+    height: 100%;
+}
