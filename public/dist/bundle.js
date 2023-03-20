@@ -215,11 +215,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var querystring_1 = require("querystring");
 var ponconjs_1 = require("ponconjs");
 document.body.ondragstart = function () { return false; };
-var poncon = new ponconjs_1["default"]();
+var poncon = new ponconjs_1.default();
 poncon.setPageList(['home', 'upload', 'about']);
 poncon.setPage('home', function (dom, args, data) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
@@ -236,6 +236,13 @@ poncon.setPage('home', function (dom, args, data) { return __awaiter(void 0, voi
     });
 }); });
 poncon.start();
+/**
+ * 加载文件列表
+ * @param parentId 文件夹 ID
+ * @param page 页码
+ * @param pageSize 每页加载数量
+ * @returns
+ */
 function loadFileList(parentId, page, pageSize) {
     if (parentId === void 0) { parentId = 0; }
     if (page === void 0) { page = 0; }

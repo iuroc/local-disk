@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendSuc = exports.sendErr = exports.sendRes = exports.parseValue = void 0;
 /**
  * 转换请求参数值

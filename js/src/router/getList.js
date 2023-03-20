@@ -35,13 +35,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var util_1 = require("../util");
 var express_validator_1 = require("express-validator");
 var db_1 = require("../db");
 /** 获取文件列表 */
-exports["default"] = (0, express_1.Router)().get('/getList', (0, express_validator_1.query)('parentId').isInt(), (0, express_validator_1.query)('page')["default"](0).isInt().custom(function (input) { return input >= 0; }), (0, express_validator_1.query)('pageSize')["default"](24).isInt().custom(function (input) { return input >= 0; }), function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.default = (0, express_1.Router)().get('/getList', (0, express_validator_1.query)('parentId').isInt(), (0, express_validator_1.query)('page').default(0).isInt().custom(function (input) { return input >= 0; }), (0, express_validator_1.query)('pageSize').default(24).isInt().custom(function (input) { return input >= 0; }), function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var errors, conn, result;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -62,6 +62,13 @@ exports["default"] = (0, express_1.Router)().get('/getList', (0, express_validat
         }
     });
 }); });
+/**
+ * 获取数据库查询结果
+ * @param res 响应对象
+ * @param conn 数据库连接
+ * @param query 请求参数
+ * @returns 查询结果
+ */
 function getResult(res, conn, query) {
     return new Promise(function (resolve) {
         var page = query.page;

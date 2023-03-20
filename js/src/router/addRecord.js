@@ -35,14 +35,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var util_1 = require("../util");
 var express_validator_1 = require("express-validator");
 var db_1 = require("../db");
 var db_2 = require("../db");
 /** 新增文件记录 */
-exports["default"] = (0, express_1.Router)().get('/addRecord', (0, express_validator_1.query)('parentId').isInt(), (0, express_validator_1.query)('name').notEmpty(), (0, express_validator_1.query)('size').isInt(), (0, express_validator_1.query)('objectId').notEmpty(), (0, express_validator_1.query)('isDir').custom(function (input) { return input == 1 || input == 0; }), function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.default = (0, express_1.Router)().get('/addRecord', (0, express_validator_1.query)('parentId').isInt(), (0, express_validator_1.query)('name').notEmpty(), (0, express_validator_1.query)('size').isInt(), (0, express_validator_1.query)('objectId').notEmpty(), (0, express_validator_1.query)('isDir').custom(function (input) { return input == 1 || input == 0; }), function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var errors, conn;
     return __generator(this, function (_a) {
         switch (_a.label) {

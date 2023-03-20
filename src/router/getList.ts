@@ -1,5 +1,5 @@
 import { Router, Response } from 'express'
-import { sendErr, sendRes, sendSuc } from '../util'
+import { sendErr, sendSuc } from '../util'
 import { query, validationResult } from 'express-validator'
 import { getConn, DATABASE_CONFIG, fileInfo } from '../db'
 import { Database } from 'sqlite3'
@@ -19,6 +19,13 @@ export default Router().get('/getList',
     }
 )
 
+/**
+ * 获取数据库查询结果
+ * @param res 响应对象
+ * @param conn 数据库连接
+ * @param query 请求参数
+ * @returns 查询结果
+ */
 function getResult(res: Response, conn: Database, query: Record<string, any>) {
     return new Promise<fileInfo[]>((resolve) => {
         let page = query.page as number

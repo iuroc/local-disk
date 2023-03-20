@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var addRecord_1 = require("./router/addRecord");
 var getList_1 = require("./router/getList");
 /**
@@ -11,7 +11,7 @@ function router(app) {
     app.use(function (_req, res, next) {
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
         next();
-    }, addRecord_1["default"], getList_1["default"]);
+    }, addRecord_1.default, getList_1.default);
     return app;
 }
-exports["default"] = router;
+exports.default = router;

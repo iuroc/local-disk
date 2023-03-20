@@ -13,6 +13,13 @@ poncon.setPage('home', async (dom, args, data) => {
 })
 poncon.start()
 
+/**
+ * 加载文件列表
+ * @param parentId 文件夹 ID
+ * @param page 页码
+ * @param pageSize 每页加载数量
+ * @returns 
+ */
 function loadFileList(parentId: number = 0, page: number = 0, pageSize: number = 24) {
     return new Promise((resolve) => {
         const listEle = document.querySelector('.file-list') as HTMLDivElement
