@@ -37,21 +37,37 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var querystring_1 = require("querystring");
+var util_1 = require("../../src/util");
 var ponconjs_1 = require("ponconjs");
 document.body.ondragstart = function () { return false; };
 var poncon = new ponconjs_1.default();
-poncon.setPageList(['home', 'upload', 'about']);
-poncon.setPage('home', function (dom, args, data) { return __awaiter(void 0, void 0, void 0, function () {
+/** 页面加载就绪记录 */
+var LOAD = {};
+poncon.setPageList(['home', 'upload', 'about', 'list']);
+poncon.setPage('home', function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, loadFileList()];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+poncon.setPage('list', function (_dom, args) { return __awaiter(void 0, void 0, void 0, function () {
+    var parentId;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!!data.load) return [3 /*break*/, 2];
-                return [4 /*yield*/, loadFileList()];
+                if (!args)
+                    return [2 /*return*/];
+                parentId = (0, util_1.parseValue)(args[0], 'number');
+                if (parentId === false)
+                    return [2 /*return*/];
+                return [4 /*yield*/, loadFileList(parentId, 0)];
             case 1:
                 _a.sent();
-                poncon.pages.home.data.load = true;
-                _a.label = 2;
-            case 2: return [2 /*return*/];
+                return [2 /*return*/];
         }
     });
 }); });
@@ -86,12 +102,23 @@ function loadFileList(parentId, page, pageSize) {
                 var html_1 = '';
                 var list = data.data;
                 list.forEach(function (item) {
-                    var imgPath = item.is_dir == 1 ? './img/folder-solid.svg' : './img/file-regular.svg';
-                    html_1 += "<div class=\"col-sm-6 col-lg-4 col-xxl-3 mb-3\">\n                                <div class=\"file-list-item hover-shadow card card-body flex-row align-items-center\"\n                                title=\"".concat(item.name, "\">\n                                    <img class=\"icon\" src=\"").concat(imgPath, "\" alt=\"").concat(['file', 'folder'][item.is_dir], "\" height=\"35px\" width=\"35px\">\n                                    <div class=\"fs-5 ms-3 text-truncate\">").concat(item.name, "</div>\n                                </div>\n                            </div>");
+                    html_1 += getHtml(item, parentId);
                 });
                 listEle.innerHTML += html_1;
                 resolve(null);
             }
         };
     });
+}
+/**
+ * 获取列表项 HTML
+ * @param item 列表项数据
+ * @param parentId 文件所属文件夹 ID
+ * @returns 列表项 HTML
+ */
+function getHtml(item, parentId) {
+    var imgPath = item.is_dir == 1 ? './img/folder-solid.svg' : './img/file-regular.svg';
+    var name = item.id == parentId ? '返回上一级' : item.name;
+    var id = item.id == parentId ? item.parent_id : item.id;
+    return "<div class=\"col-sm-6 col-lg-4 col-xxl-3 mb-3\">\n    <a class=\"file-list-item hover-shadow card card-body flex-row align-items-center\"\n    title=\"".concat(name, "\" ").concat(item.is_dir ? "href=\"#/list/".concat(id, "\"") : '', ">\n        <img class=\"icon\" src=\"").concat(imgPath, "\" alt=\"").concat(['file', 'folder'][item.is_dir], "\" height=\"35px\" width=\"35px\">\n        <div class=\"fs-5 ms-3 text-truncate\">").concat(name, "</div>\n    </a>\n</div>");
 }

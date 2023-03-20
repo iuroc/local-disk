@@ -217,21 +217,37 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var querystring_1 = require("querystring");
+var util_1 = require("../../src/util");
 var ponconjs_1 = require("ponconjs");
 document.body.ondragstart = function () { return false; };
 var poncon = new ponconjs_1.default();
-poncon.setPageList(['home', 'upload', 'about']);
-poncon.setPage('home', function (dom, args, data) { return __awaiter(void 0, void 0, void 0, function () {
+/** 页面加载就绪记录 */
+var LOAD = {};
+poncon.setPageList(['home', 'upload', 'about', 'list']);
+poncon.setPage('home', function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, loadFileList()];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+poncon.setPage('list', function (_dom, args) { return __awaiter(void 0, void 0, void 0, function () {
+    var parentId;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!!data.load) return [3 /*break*/, 2];
-                return [4 /*yield*/, loadFileList()];
+                if (!args)
+                    return [2 /*return*/];
+                parentId = (0, util_1.parseValue)(args[0], 'number');
+                if (parentId === false)
+                    return [2 /*return*/];
+                return [4 /*yield*/, loadFileList(parentId, 0)];
             case 1:
                 _a.sent();
-                poncon.pages.home.data.load = true;
-                _a.label = 2;
-            case 2: return [2 /*return*/];
+                return [2 /*return*/];
         }
     });
 }); });
@@ -266,8 +282,7 @@ function loadFileList(parentId, page, pageSize) {
                 var html_1 = '';
                 var list = data.data;
                 list.forEach(function (item) {
-                    var imgPath = item.is_dir == 1 ? './img/folder-solid.svg' : './img/file-regular.svg';
-                    html_1 += "<div class=\"col-sm-6 col-lg-4 col-xxl-3 mb-3\">\n                                <div class=\"file-list-item hover-shadow card card-body flex-row align-items-center\"\n                                title=\"".concat(item.name, "\">\n                                    <img class=\"icon\" src=\"").concat(imgPath, "\" alt=\"").concat(['file', 'folder'][item.is_dir], "\" height=\"35px\" width=\"35px\">\n                                    <div class=\"fs-5 ms-3 text-truncate\">").concat(item.name, "</div>\n                                </div>\n                            </div>");
+                    html_1 += getHtml(item, parentId);
                 });
                 listEle.innerHTML += html_1;
                 resolve(null);
@@ -275,8 +290,137 @@ function loadFileList(parentId, page, pageSize) {
         };
     });
 }
+/**
+ * 获取列表项 HTML
+ * @param item 列表项数据
+ * @param parentId 文件所属文件夹 ID
+ * @returns 列表项 HTML
+ */
+function getHtml(item, parentId) {
+    var imgPath = item.is_dir == 1 ? './img/folder-solid.svg' : './img/file-regular.svg';
+    var name = item.id == parentId ? '返回上一级' : item.name;
+    var id = item.id == parentId ? item.parent_id : item.id;
+    return "<div class=\"col-sm-6 col-lg-4 col-xxl-3 mb-3\">\n    <a class=\"file-list-item hover-shadow card card-body flex-row align-items-center\"\n    title=\"".concat(name, "\" ").concat(item.is_dir ? "href=\"#/list/".concat(id, "\"") : '', ">\n        <img class=\"icon\" src=\"").concat(imgPath, "\" alt=\"").concat(['file', 'folder'][item.is_dir], "\" height=\"35px\" width=\"35px\">\n        <div class=\"fs-5 ms-3 text-truncate\">").concat(name, "</div>\n    </a>\n</div>");
+}
 
-},{"ponconjs":5,"querystring":3}],5:[function(require,module,exports){
+},{"../../src/util":5,"ponconjs":6,"querystring":3}],5:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sendSuc = exports.sendErr = exports.sendRes = exports.parseValue = void 0;
+/**
+ * 转换请求参数值
+ * @param value 待处理的值
+ * @param type 希望被转换为的类型
+ * @param defaultValue 默认值，缺省则此请求参数为必填
+ * @returns 转换结果，如为 `false`，则参数缺失或参数类型转换错误
+ * @author 欧阳鹏
+ */
+function parseValue(value, type, defaultValue) {
+    if (value === void 0) { value = ''; }
+    if (type === void 0) { type = 'string'; }
+    /** 请求参数是否可留空 */
+    var notNull = defaultValue == undefined;
+    if (notNull && (value == undefined || value == ''))
+        // 请求参数缺失
+        return false;
+    /** `value` 转为的字符串 */
+    var strValue = value.toString();
+    if (type == 'string')
+        // 输出 string 类型
+        return setReturn(strValue);
+    if (type == 'number') {
+        // 输出 number 类型
+        return setReturn(toNumber(strValue));
+    }
+    if (type == 'array') {
+        // 输出 string[] 类型
+        if (typeof value == 'string')
+            return setReturn([value]);
+        if (Array.isArray(value)) {
+            var result = value.map(function (item) { return item.toString(); });
+            return setReturn(result);
+        }
+    }
+    if (type == 'numArray') {
+        // 输出数字数组
+        if (typeof value == 'string')
+            return setReturn([toNumber(strValue)]);
+        if (Array.isArray(value)) {
+            /** 转换成功与否 */
+            var isGood_1 = true;
+            var result = value.map(function (item) {
+                var temp = toNumber(item);
+                isGood_1 = (temp !== false);
+                return temp;
+            });
+            // 判断转换成功与否
+            if (isGood_1)
+                return setReturn(result);
+            return false;
+        }
+    }
+    return false;
+    /**
+     * 字符串转为数字
+     * @param str 待转换的字符串
+     * @returns 转换结果，失败则返回 false
+     */
+    function toNumber(str) {
+        var num = parseInt(str);
+        var result = isNaN(num) ? false : num;
+        return result;
+    }
+    /**
+     * 设置返回内容
+     * @param value 处理前返回内容
+     * @returns 处理后返回内容
+     */
+    function setReturn(value) {
+        if ((value === false || value === '')
+            && defaultValue !== undefined)
+            return defaultValue;
+        return value;
+    }
+}
+exports.parseValue = parseValue;
+/**
+ * 发送响应
+ * @param res 响应对象
+ * @param data 响应数据主体
+ * @param msg 提示文本
+ * @param code 响应代码
+ * @returns 生成结果
+ */
+function sendRes(res, data, msg, code) {
+    if (data === void 0) { data = null; }
+    if (msg === void 0) { msg = ''; }
+    if (code === void 0) { code = 200; }
+    return res.status(code).json({ code: code, msg: msg, data: data });
+}
+exports.sendRes = sendRes;
+/**
+ * 发送错误响应
+ * @param res 响应对象
+ * @param msg 提示文本
+ * @returns
+ */
+function sendErr(res, msg) {
+    return sendRes(res, null, msg, 400);
+}
+exports.sendErr = sendErr;
+/**
+ * 发送成功响应
+ * @param res 响应对象
+ * @param data 响应数据主体
+ * @param msg 提示文本
+ * @returns
+ */
+function sendSuc(res, data, msg) {
+    return sendRes(res, data, msg, 200);
+}
+exports.sendSuc = sendSuc;
+
+},{}],6:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 /**

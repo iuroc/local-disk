@@ -14,25 +14,25 @@ export default Router().get('/getList',
         if (!errors.isEmpty()) return sendErr(res, errors.array()[0].msg)
         /** 数据库连接 */
         const conn = await getConn(res)
-        const result = await getResult(res, conn, req.query as Record<string, any>)
-        sendSuc(res, result, '获取成功')
+        const fileList = await getFileList(res, conn, req.query as Record<string, any>)
+        sendSuc(res, fileList, '获取成功')
     }
 )
 
 /**
- * 获取数据库查询结果
+ * 获取文件列表
  * @param res 响应对象
  * @param conn 数据库连接
  * @param query 请求参数
  * @returns 查询结果
  */
-function getResult(res: Response, conn: Database, query: Record<string, any>) {
+function getFileList(res: Response, conn: Database, query: Record<string, any>) {
     return new Promise<fileInfo[]>((resolve) => {
         let page = query.page as number
         let pageSize = query.pageSize as number
         let parentId = query.parentId as number
         let sql = `SELECT * FROM "${DATABASE_CONFIG.table}"
-        WHERE "parent_id" = ${parentId} LIMIT ${pageSize} OFFSET ${page * pageSize}`
+        WHERE "parent_id" = ${parentId} OR "id" = ${parentId} LIMIT ${pageSize} OFFSET ${page * pageSize}`
         conn.all(sql, (err, rows: fileInfo[]) => {
             if (err) return sendErr(res, '数据库查询失败')
             resolve(rows)

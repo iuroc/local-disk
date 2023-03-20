@@ -42,7 +42,7 @@ var express_validator_1 = require("express-validator");
 var db_1 = require("../db");
 /** 获取文件列表 */
 exports.default = (0, express_1.Router)().get('/getList', (0, express_validator_1.query)('parentId').isInt(), (0, express_validator_1.query)('page').default(0).isInt().custom(function (input) { return input >= 0; }), (0, express_validator_1.query)('pageSize').default(24).isInt().custom(function (input) { return input >= 0; }), function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var errors, conn, result;
+    var errors, conn, fileList;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -54,27 +54,27 @@ exports.default = (0, express_1.Router)().get('/getList', (0, express_validator_
                 return [4 /*yield*/, (0, db_1.getConn)(res)];
             case 1:
                 conn = _a.sent();
-                return [4 /*yield*/, getResult(res, conn, req.query)];
+                return [4 /*yield*/, getFileList(res, conn, req.query)];
             case 2:
-                result = _a.sent();
-                (0, util_1.sendSuc)(res, result, '获取成功');
+                fileList = _a.sent();
+                (0, util_1.sendSuc)(res, fileList, '获取成功');
                 return [2 /*return*/];
         }
     });
 }); });
 /**
- * 获取数据库查询结果
+ * 获取文件列表
  * @param res 响应对象
  * @param conn 数据库连接
  * @param query 请求参数
  * @returns 查询结果
  */
-function getResult(res, conn, query) {
+function getFileList(res, conn, query) {
     return new Promise(function (resolve) {
         var page = query.page;
         var pageSize = query.pageSize;
         var parentId = query.parentId;
-        var sql = "SELECT * FROM \"".concat(db_1.DATABASE_CONFIG.table, "\"\n        WHERE \"parent_id\" = ").concat(parentId, " LIMIT ").concat(pageSize, " OFFSET ").concat(page * pageSize);
+        var sql = "SELECT * FROM \"".concat(db_1.DATABASE_CONFIG.table, "\"\n        WHERE \"parent_id\" = ").concat(parentId, " OR \"id\" = ").concat(parentId, " LIMIT ").concat(pageSize, " OFFSET ").concat(page * pageSize);
         conn.all(sql, function (err, rows) {
             if (err)
                 return (0, util_1.sendErr)(res, '数据库查询失败');

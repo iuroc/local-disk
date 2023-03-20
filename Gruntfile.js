@@ -7,7 +7,7 @@ module.exports = function (grunt) {
         },
         watch: {
             scripts: {
-                files: ['**/*.js'],
+                files: ['js/public/src/index.js'],
                 tasks: ['shell:build'],
                 options: {
                     spawn: false,
