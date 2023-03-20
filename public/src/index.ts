@@ -24,7 +24,7 @@ poncon.setPage('upload', () => {
 })
 poncon.start()
 
-document.body.oncontextmenu = (event) => event.preventDefault()
+document.documentElement.oncontextmenu = (event) => event.preventDefault()
 /** 右键菜单面板 */
 const menuEle = document.querySelector<HTMLDivElement>('.file-list-menu')
 document.documentElement.onclick = (event) => {
@@ -34,6 +34,15 @@ document.documentElement.onclick = (event) => {
     }
 }
 
+const uploadEle = document.querySelector<HTMLLinkElement>('.header .upload')
+const inputFileEle = document.querySelector<HTMLInputElement>('.input-file')
+uploadEle?.addEventListener('click', () => {
+    inputFileEle?.click()
+})
+window.addEventListener("beforeunload", function (event) {
+    event.preventDefault()
+    event.returnValue = ''
+})
 /**
  * 加载文件列表
  * @param parentId 文件夹 ID

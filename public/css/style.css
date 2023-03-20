@@ -44,3 +44,7 @@ a:hover {
 html {
     height: 100%;
 }
+
+.input-file {
+    display: none;
+}

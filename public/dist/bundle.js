@@ -268,7 +268,7 @@ poncon.setPage('upload', function () {
     document.title = '上传文件 - ' + config_1.CONFIG.siteName;
 });
 poncon.start();
-document.body.oncontextmenu = function (event) { return event.preventDefault(); };
+document.documentElement.oncontextmenu = function (event) { return event.preventDefault(); };
 /** 右键菜单面板 */
 var menuEle = document.querySelector('.file-list-menu');
 document.documentElement.onclick = function (event) {
@@ -278,6 +278,15 @@ document.documentElement.onclick = function (event) {
             menuEle.style.display = 'none';
     }
 };
+var uploadEle = document.querySelector('.header .upload');
+var inputFileEle = document.querySelector('.input-file');
+uploadEle === null || uploadEle === void 0 ? void 0 : uploadEle.addEventListener('click', function () {
+    inputFileEle === null || inputFileEle === void 0 ? void 0 : inputFileEle.click();
+});
+window.addEventListener("beforeunload", function (event) {
+    event.preventDefault();
+    event.returnValue = '';
+});
 /**
  * 加载文件列表
  * @param parentId 文件夹 ID
