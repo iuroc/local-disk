@@ -1,5 +1,5 @@
 import { Router, Response } from 'express'
-import { sendErr, sendRes } from '../tool'
+import { sendErr, sendSuc } from '../util'
 import { query, validationResult } from 'express-validator'
 import { getConn } from '../db'
 import { Database } from 'sqlite3'
@@ -16,10 +16,9 @@ export default Router().get('/addRecord',
         const errors = validationResult(req)
         if (!errors.isEmpty())
             return sendErr(res, errors.array()[0].msg)
-        if (!req.query) return sendErr(res, '参数错误')
         /** 数据库连接 */
         const conn = await getConn(res)
-        await insertData(res, conn, req.query)
+        await insertData(res, conn, req.query as Record<string, any>)
     })
 /**
  * 插入数据
@@ -55,5 +54,5 @@ async function insertData(res: Response, conn: Database, query: Record<string, a
             resolve(null)
         })
     })
-    sendRes(res)
+    sendSuc(res, null, '新增记录成功')
 }

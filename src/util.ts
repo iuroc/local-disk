@@ -104,6 +104,7 @@ export type ApiResponse = {
 
 /**
  * 发送响应
+ * @param res 响应对象
  * @param data 响应数据主体
  * @param msg 提示文本
  * @param code 响应代码

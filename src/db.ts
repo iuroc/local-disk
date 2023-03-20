@@ -1,5 +1,5 @@
 import { Database } from 'sqlite3'
-import { sendErr } from './tool'
+import { sendErr } from './util'
 import { Response } from 'express'
 
 /** 数据库配置 */
@@ -47,4 +47,22 @@ function initTable(conn: Database) {
             resolve(conn)
         })
     })
+}
+
+/** 数据库中的文件信息 */
+export type fileInfo = {
+    /** 文件 ID */
+    'id': number,
+    /** 父文件夹 ID */
+    'parent_id': number,
+    /** 文件名 */
+    'name': string,
+    /** 是否是文件夹 */
+    'is_dir': number,
+    /** 文件大小 */
+    'size': number,
+    /** 文件对象 ID */
+    'object_id': string,
+    /** 上传时间 */
+    'upload_time': string
 }
