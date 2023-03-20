@@ -1,21 +1,14 @@
-module.exports = function (grunt) {
+module.exports = grunt => {
     grunt.initConfig({
-        shell: {
-            build: {
-                command: 'yarn run build'
-            }
-        },
         watch: {
             scripts: {
                 files: ['js/public/src/index.js'],
-                tasks: ['shell:build'],
-                options: {
-                    spawn: false,
-                },
-            },
-        },
+                tasks: ['exec:yarn run build'],
+                options: { spawn: false }
+            }
+        }
     })
     grunt.loadNpmTasks('grunt-contrib-watch')
-    grunt.loadNpmTasks('grunt-shell')
+    grunt.loadNpmTasks('grunt-exec')
     grunt.registerTask('default', ['watch'])
 }
